@@ -1,0 +1,9 @@
+---
+# minimum required information
+vc_name: "vc-mgmt.rainpole.dev"
+vc_usr_name: "administrator@vsphere.local"
+vc_passwd: "PSGlobalCloud123!"
+vc_vali_certs: false
+vc_role_name: "vmware_qa"
+group_name: "openshift"
+permission_scope: "rootFolder"

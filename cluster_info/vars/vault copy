@@ -1,0 +1,5 @@
+vault_vc_name: "vc-mgmt.rainpole.dev"
+vault_vc_usr_name: "administrator@vsphere.local"
+vault_vc_passwd: "PSGlobalCloud123!"
+vault_dc_name: "ber-m01-dc01"
+vault_clu_name: "ber-m01-cl01"

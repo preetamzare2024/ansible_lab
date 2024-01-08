@@ -1,0 +1,21 @@
+---
+# minimum required information
+vc_name: "vc-mgmt.rainpole.dev"
+vc_usr_name: "administrator@vsphere.local"
+vc_passwd: "PSGlobalCloud123!"
+vc_vali_certs: false
+# variables as per requirements
+clu_name: "ber-m01-cl01"
+dc_name: "ber-m01-dc01"
+datastore: "ber-m01-cl01-ds-vsan01"
+vm_name: "md-hcx"
+vm_location: "ber-m01-dc01/vm/Management VMs"
+ova_name: "VMware-HCX-Installer-4.7.0.0-22085068.ova"
+pg_name: "SDDC-DPortGroup-Mgmt"
+appln_pwd: "PSGlobalCloud123!"
+appln_ip: "172.18.11.215"
+appln_sm: "24"
+appln_gtw: "172.18.11.253"
+appln_dns: "192.168.0.253,172.18.11.253"
+appln_ntp: "192.168.0.253"
+appln_domain_sl: "rainpole.dev"

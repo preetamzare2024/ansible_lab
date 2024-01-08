@@ -1,0 +1,17 @@
+dnsdata:
+  - 10.215.18.103 sddc-md-vcf4-ko
+  - 10.215.18.1 esxi1-ma01-md-vcf4-ko
+  - 10.215.18.2 esxi2-ma01-md-vcf4-ko
+  - 10.215.18.3 esxi3-ma01-md-vcf4-ko
+  - 10.215.18.4 esxi4-ma01-md-vcf4-ko
+  - 10.215.18.5 esxi5-ma01-md-vcf4-ko
+  - 10.215.18.6 esxi6-ma01-md-vcf4-ko
+  - 10.215.18.7 esxi7-ma01-md-vcf4-ko
+  - 10.215.18.8 esxi8-ma01-md-vcf4-ko
+  - 10.215.18.100 vc-md-vcf4-ko
+  - 10.215.18.104 nsxmgr-md-vcf4-ko
+  - 10.215.18.105 nsxmgr1-md-vcf4-ko
+  - 10.215.18.106 nsxmgr2-md-vcf4-ko
+  - 10.215.18.107 nsxmgr3-md-vcf4-ko
+  - 10.215.18.215 md-hcx
+  - 10.215.18.216 md-skyline

@@ -1,0 +1,42 @@
+---
+- name: create a vm demo
+  hosts: localhost
+  become: false
+  gather_facts: false
+  pre_tasks:
+    - include_vars: vars.yaml
+  tasks:
+    - name: create VM folder
+      community.vmware.vcenter_folder:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
+        validate_certs: "{{ vcenter_validate_certs }}"
+        datacenter: "{{ vcenter_datacenter }}"
+        folder_name: "{{ vcenter_folder_name }}"
+        folder_type: vm
+        state: present
+    - name: create a VM
+      community.vmware.vmware_guest:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
+        validate_certs: "{{ vcenter_validate_certs }}"
+        datacenter: "{{ vcenter_datacenter }}"
+        folder: "{{ vcenter_folder_name }}"
+        name: "{{ vm_to_crt }}"
+        state: "{{ vm_state }}"
+        guest_id: "{{ vm_guest_id }}"
+        cluster: "{{ vcenter_cluster }}"
+        disk:
+          - size_gb: "{{ vm_size }}"
+            type: "{{ disk_type }}"
+            datastore: "{{ cluster_datastore }}"
+        hardware:
+          memory_mb: "{{ vm_memory }}"
+          num_cpus: "{{ no_of_cpu }}"
+          scsi: "{{ vm_scsi_crtl }}"
+        networks:
+          - name: "{{ vm_network }}"
+            device_type: "{{ nic_type }}"
+

@@ -1,0 +1,31 @@
+---
+- name: Create vCenter Roles
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - vcenter_roles.yaml
+    - vcenter_vars.yaml
+  tasks:
+  - name: Add local role with privileges to vCenter
+    community.vmware.vmware_local_role_manager:
+      hostname: "{{ vc_name }}"
+      username: "{{ vc_usr_name }}"
+      password: "{{ vc_passwd }}"
+      validate_certs: "{{ vc_vali_certs }}"
+      local_role_name: "{{ vc_role_name }} "
+      local_privilege_ids: "{{ item }}"
+      state: present
+    delegate_to: localhost
+    loop: "[{{ vcenter_level }}]" # you need a square bracket, to pass complete
+    # list into local_privilege_ids as it is expecting a list.
+
+  - name: Add "{{ group_name }}" to root folder with "{{ vc_role_name }}" role
+    community.vmware.vmware_object_role_permission:
+      hostname: "{{ vc_name }}"
+      username: "{{ vc_usr_name }}"
+      password: "{{ vc_passwd }}"
+      validate_certs: "{{ vc_vali_certs }}"
+      role: "{{ vc_role_name }}"
+      group: "{{ group_name }}"
+      object_name: "{{ permission_scope }}"
+    delegate_to: localhost

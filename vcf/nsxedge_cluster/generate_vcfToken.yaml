@@ -1,0 +1,25 @@
+# Goal - Generate a VCF Token
+- name: Validate NSX Edge JSON file
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - nsxedgecluster_vars.yaml
+  tasks:
+    - name: Get VCF Token
+      ansible.builtin.uri:
+        url: "{{ sddcm_url }}"
+        method: POST
+        validate_certs: false
+        force_basic_auth: true
+        return_content: true
+        body_format: json
+        body: '{"username": "administrator@vsphere.local","password": {{ sso_password }}}'
+        status_code:
+          - 200
+          - 202
+      register: vcf_token
+    - name: Get VCF Token
+      ansible.builtin.copy:
+        content: "{{ vcf_token.json.accessToken }}"
+        dest: token/vcf_token
+        mode: "0644"

@@ -1,0 +1,29 @@
+# Preparation:
+  # - you need to create user on hatchery.
+  # - i create user preetam on it and added it to sudo group
+  # useradd -m -s /bin/bash -G sudo -C 'Preetam Zare' preetam
+  # ssh-copy-id ~/.ssh/id_ed25519 preetam@hatchery
+  # run this playbook as
+  # >> ansible-playbook -i inventory.ini -K create_dnsentries <<
+  # ensure the inventory file has dnsservers group configured.
+
+---
+- name: Create DNS entries and restart dns server
+  hosts: dnsservers
+  gather_facts: true
+  become: true
+  pre_tasks:
+    - ansible.builtin.include_vars: dnsdata.yaml
+  handlers:
+    - name: Restart_dns_server
+      ansible.builtin.service:
+        name: dnsmasq
+        state: restarted
+  tasks:
+    - name: Add entry to dnsmasqhost file
+      ansible.builtin.lineinfile:
+        path: "/etc/dnsmasqhosts.conf"
+        regex: "{{ '^item' }}"
+        line: "{{ item }}"
+      with_items: "{{ dnsdata }}"
+      notify: Restart_dns_server

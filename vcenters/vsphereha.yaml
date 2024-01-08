@@ -1,0 +1,18 @@
+# create a user in vCenter SSO
+- name: isolation address
+  hosts: localhost
+  gather_facts: false
+  vars_files: esxi_vars.yaml
+  tasks:
+    - name: Enable HA without admission control
+      community.vmware.vmware_cluster_ha:
+        hostname: "{{ vc_name }}"
+        username: "{{ vc_usr_name }}"
+        password: "{{ vc_passwd }}"
+        datacenter_name: datacenter
+        cluster_name: "{{ clu_name }}"
+        validate_certs: "{{ vcenter_validate_certs }}"
+        advanced_settings:
+          "das.isolationaddress0": "172.18.13.253"
+      delegate_to: localhost
+

@@ -1,0 +1,6 @@
+fld_names:
+  - ubuntu_templates
+  - ubuntu_prod
+  - ubuntu_dev
+  - ubuntu_test
+

@@ -1,0 +1,11 @@
+---
+# minimum required information
+# subscription vcenter
+vc_name: "vc-wkld1.rainpole.dev"
+vc_usr_name: "administrator@vsphere.local"
+vc_passwd: "PSGlobalCloud123!"
+vc_vali_certs: false
+cl_name: "common"
+dc_name: "ber-wkld1-dc01"
+datastore_name: "ber-wkld1-cl01-ds-vsan01"
+sub_url: "https://vc-mgmt.rainpole.dev:443/cls/vcsp/lib/50e6592c-2c9a-429c-a064-2566769a0ea4/lib.json"

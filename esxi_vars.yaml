@@ -1,0 +1,8 @@
+# this file needs to be encrypted
+vc_name: "vc-mgmt.rainpole.dev"
+vc_usr_name: "administrator@vsphere.local"
+vc_passwd: "PSGlobalCloud123!"
+dc_name: "ber-m01-dc01"
+clu_name: "ber-m01-cl01"
+vcenter_validate_certs: false
+

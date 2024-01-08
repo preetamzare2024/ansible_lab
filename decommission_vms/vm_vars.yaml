@@ -1,0 +1,21 @@
+# this file needs to be encrypted
+vc_name: "vc-mgmt.rainpole.dev"
+vc_usr_name: "administrator@vsphere.local"
+vc_passwd: "PSGlobalCloud123!"
+vcenter_validate_certs: false
+fld_name: "ubuntu_templates"
+dc_name: "ber-m01-dc01"
+clu_name: "ber-m01-cl01"
+ds_name: "ber-m01-cl01-ds-vsan01"
+vm_network: "SDDC-DPortGroup-Mgmt"
+ds_fldp: "ISO"
+vm_fld_name: "ubuntu_test"
+vm_name: "ubuntutest01"
+tmpl_name: "ubuntu_golden"
+vm_ip: "172.18.11.211"
+vm_sm: "255.255.255.0"
+vm_gtw: "172.18.11.253"
+cus_domainname: "rainpole.dev"
+cust_dns_srv01: "192.168.0.253"
+cust_dns_sffx: "rainpole.dev"
+

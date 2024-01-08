@@ -1,0 +1,20 @@
+---
+- name: Configure files for cloud init
+  hosts: localhost
+  gather_facts: true
+  tasks:
+    - name: Disable vmware customization
+      lineinfile:
+        path: cloud.cfg
+        regex: "^disable_vmware_customization: true"
+        insertbefore: "users:"
+        firstmatch: yes
+        line: "disable_vmware_customization: true"
+    - name: Add service after dbus service
+      lineinfile:
+        path: open-vm-tools.service
+        regex: "^After=dbus.service"
+        insertafter: "[Unit]"
+        firstmatch: yes
+        line: "After=dbus.service"
+

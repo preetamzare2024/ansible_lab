@@ -1,0 +1,61 @@
+---
+- name: Install and configure Skyline Collector
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - skyline_vars.yaml
+
+  tasks:
+    - name: Deploy and Power on Skyline Collector
+      community.vmware.vmware_deploy_ovf:
+        hostname: "{{ vc_name }}"
+        username: "{{ vc_usr_name }}"
+        password: "{{ vc_passwd }}"
+        validate_certs: "{{ vc_vali_certs }}"
+        datacenter: "{{ dc_name }}"
+        cluster: "{{ clu_name }}"
+        folder: "{{ vm_location }}"
+        datastore: "{{ datastore }}"
+        disk_provisioning: thin
+        ovf: "{{ ova_name }}"
+        name: "{{ vm_name }}"
+        allow_duplicates: false
+        fail_on_spec_warnings: true
+        wait_for_ip_address: true
+        power_on: true
+        networks:
+          "Network 1" : "{{ pg_name }}"
+        properties:
+          varoot-password: "{{ appln_pwd }}"
+          vami.ip0.VMware_Skyline_Appliance: "{{ appln_ip }}"
+          vami.netmask0.VMware_Skyline_Appliance: "{{ appln_sm }}"
+          vami.gateway.VMware_Skyline_Appliance: "{{ appln_gtw }}"
+          vami.DNS.VMware_Skyline_Appliance: "{{ appln_dns }}"
+          vami.domain.VMware_Skyline_Appliance: "{{ appln_domain }}"
+          vami.searchpath.VMware_Skyline_Appliance: "{{ appln_domain_sl }}"
+      delegate_to: localhost
+
+    - name: Wait till VMware tools is running
+      community.vmware.vmware_guest_tools_wait:
+        hostname: "{{ vc_name }}"
+        username: "{{ vc_usr_name }}"
+        password: "{{ vc_passwd }}"
+        validate_certs: "{{ vc_vali_certs }}"
+        datacenter: "{{ dc_name }}"
+        name: "{{ vm_name }}"
+      register: vm_tools_info
+      until:
+        - vm_tools_info.instance.guest_tools_status == "guestToolsRunning"
+      retries: 15
+      delay: 10
+      delegate_to: localhost
+
+    - name: Print the "{{ vm_name }}" configuration
+      ansible.builtin.debug:
+        msg:
+        - "{{ vm_name }} is deployed on {{ vm_tools_info['instance']['hw_esxi_host'] }} ESXi host"
+        - "VMware Tools Status is {{ vm_tools_info['instance']['guest_tools_status'] }}"
+        - "RAM Assigned is {{ vm_tools_info['instance']['hw_memtotal_mb'] }}"
+        - "CPU Cores Assigned is {{ vm_tools_info['instance']['hw_processor_count'] }}"
+        - "IP4 assigned is {{ vm_tools_info['instance']['ipv4'] }}"
+

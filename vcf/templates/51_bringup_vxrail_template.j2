@@ -1,0 +1,178 @@
+{
+    "subscriptionLicensing": false,
+  "skipEsxThumbprintValidation": true,
+  "managementPoolName": "",
+  "sddcManagerSpec": {
+    "secondUserCredentials": {
+      "username": "vcf",
+      "password": "PSGlobalCloud123!"
+    },
+    "ipAddress": "172.16.11.59",
+    "hostname": "sfo-vcf01",
+    "rootUserCredentials": {
+      "username": "root",
+      "password": "PSGlobalCloud123!"
+    },
+    "localUserPassword": "PSGlobalCloud123!"
+  },
+  "sddcId": "{{ sddcname }}",
+  "esxLicense": "N0415-JEWD2-J8VN0-07HH4-F9VQ0",
+  "taskName": "workflowconfig/workflowspec-vxrail.json",
+  "ceipEnabled": true,
+  "fipsEnabled": false,
+  "ntpServers": ["172.16.11.253"],
+  "vxManagerSpec": {
+    "vxManagerHostName": "sfo-m01-vxm01",
+    "defaultRootUserCredentials": {
+      "username": "root",
+      "password": "PSGlobalCloud123!"
+    },
+    "defaultAdminUserCredentials": {
+      "username": "mystic",
+      "password": "PSGlobalCloud1234!"
+    }
+  },
+  "dnsSpec": {
+    "subdomain": "sfo.rainpole.io",
+    "domain": "sfo.rainpole.io",
+    "nameserver": "172.16.11.4"
+  },
+  "networkSpecs": [
+    
+  ],
+  "nsxtSpec":
+  {
+    "nsxtManagerSize": "medium",
+    "nsxtManagers": [
+      {
+          "hostname": "sfo-m01-nsx01a",
+          "ip": "172.16.11.66"
+      },
+      {
+          "hostname": "sfo-m01-nsx01b",
+          "ip": "172.16.11.67"
+      },
+      {
+          "hostname": "sfo-m01-nsx01c",
+          "ip": "172.16.11.68"
+      }
+    ],
+    "rootNsxtManagerPassword": "PSGlobalCloud123!",
+    "nsxtAdminPassword": "PSGlobalCloud123!",
+    "nsxtAuditPassword": "PSGlobalCloud123!",
+    "vip": "172.16.11.65",
+    "vipFqdn": "sfo-m01-nsx01",
+    "nsxtLicense": "MM4L3-DLL93-789CT-0LA26-0WW57",
+    "transportVlanId": 1614
+  },
+  "vsanSpec": {
+      "licenseFile": "NH285-JDF40-58KN9-0ZV0M-F41J0",
+      "datastoreName": "VxRail-Virtual-SAN-Datastore"
+  },
+  "dvsSpecs": [
+    {
+      "dvsName": "sfo-m01-cl01-vds01",
+      "vmnics": [
+        "vmnic0",
+        "vmnic1"
+      ],
+      "networks":[
+        
+      ],
+       "nsxtSwitchConfig": {
+        "transportZones": [ {
+          "name": "sfo-m01-tz-overlay01",
+          "transportType": "OVERLAY"
+        },
+        {
+          "name": "sfo-m01-tz-vlan01",
+          "transportType": "VLAN"
+        }
+        ]
+      }
+    }
+  ],
+  "clusterSpec":
+  {
+    "clusterName": "VxRail-Virtual-SAN-Cluster",
+    "clusterEvcMode": "",
+    "vmFolders": {
+      "MANAGEMENT": "sfo-m01-fd-mgmt",
+      "NETWORKING": "sfo-m01-fd-nsx",
+      "EDGENODES": "sfo-m01-fd-edge"
+    }
+  },
+  "pscSpecs": [
+    {
+      "adminUserSsoPassword": "PSGlobalCloud123!",
+      "pscSsoSpec": {
+        "ssoDomain": "vsphere.local"
+      }
+    }
+  ],
+  "vcenterSpec": {
+      "vcenterIp": "172.16.11.62",
+      "vcenterHostname": "sfo-m01-vc01",
+      "licenseFile": "W40RH-FE192-08CQ8-0C3U2-3N47P",
+      "rootVcenterPassword": "PSGlobalCloud123!"
+  },
+  "hostSpecs": [
+    {
+      "association": "VxRail-Datacenter",
+      "ipAddressPrivate": {
+        "cidr": "172.16.11.0/24",
+        "gateway": "172.16.11.253",
+        "ipAddress": "172.16.11.101"
+      },
+      "hostname": "sfo01-m01-esx01",
+      "credentials": {
+        "username": "root",
+        "password": "PSGlobalCloud123!"
+      },
+      "vSwitch": ""
+    },
+    {
+      "association": "VxRail-Datacenter",
+      "ipAddressPrivate": {
+        "cidr": "172.16.11.0/24",
+        "gateway": "172.16.11.253",
+        "ipAddress": "172.16.11.102"
+      },
+      "hostname": "sfo01-m01-esx02",
+      "credentials": {
+        "username": "root",
+        "password": "PSGlobalCloud123!"
+      },
+      "vSwitch": ""
+    },
+    {
+      "association": "VxRail-Datacenter",
+      "ipAddressPrivate": {
+        "cidr": "172.16.11.0/24",
+        "gateway": "172.16.11.253",
+        "ipAddress": "172.16.11.103"
+      },
+      "hostname": "sfo01-m01-esx03",
+      "credentials": {
+        "username": "root",
+        "password": "PSGlobalCloud123!"
+      },
+      "vSwitch": ""
+    },
+    {
+      "association": "VxRail-Datacenter",
+      "ipAddressPrivate": {
+        "cidr": "172.16.11.0/24",
+        "gateway": "172.16.11.253",
+        "ipAddress": "172.16.11.104"
+      },
+      "hostname": "sfo01-m01-esx04",
+      "credentials": {
+        "username": "root",
+        "password": "PSGlobalCloud123!"
+      },
+      "vSwitch": ""
+    }
+  ]
+}
+

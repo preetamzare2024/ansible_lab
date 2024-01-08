@@ -1,0 +1,19 @@
+# get NTP configuration for a vCenter using rest_api
+---
+  - name: retrieve NTP configuration for a "{{ vc_name }}"
+    hosts: localhost
+    gather_facts: false
+    vars_files:
+      - vars_info.yaml
+      - vault_info.yaml
+    tasks:
+      - name: Get the NTP configuration for a vCenter
+        vmware.vmware_rest.appliance_ntp_info:
+          vcenter_hostname: "{{ vault_vc_name }}"
+          vcenter_username: "{{ vault_vc_usr_name }}"
+          vcenter_password: "{{ vault_vc_passwd }}"
+          vcenter_validate_certs: false
+        register: ntp_info
+      - name: Print the result
+        debug:
+          var: ntp_info.value

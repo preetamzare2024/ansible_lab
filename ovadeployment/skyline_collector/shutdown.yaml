@@ -1,0 +1,31 @@
+---
+- name: shutdown VM and then delete it
+  hosts: localhost
+  gather_facts: false
+  pre_tasks:
+    - include_vars: skyline_vars.yaml
+  tasks:
+    - name: Gracefully shutdown a {{ vm_name }} VM
+      community.vmware.vmware_guest:
+        hostname: "{{ vc_name }}"
+        username: "{{ vc_usr_name }}"
+        password: "{{ vc_passwd }}"
+        validate_certs: "{{ vc_vali_certs }}"
+        name: "{{ vm_name }}"
+        state: shutdownguest
+      register: guest_state
+      until:
+        - guest_state.instance.hw_power_status == "poweredOff"
+      retries: 10
+      delay: 5
+      delegate_to: localhost
+
+    - name: delete the {{ vm_name }} VM
+      community.vmware.vmware_guest:
+        hostname: "{{ vc_name }}"
+        username: "{{ vc_usr_name }}"
+        password: "{{ vc_passwd }}"
+        validate_certs: false
+        name: "{{ vm_name }}"
+        state: absent
+      delegate_to: localhost

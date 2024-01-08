@@ -1,0 +1,66 @@
+---
+- name: deploy skyline ova file
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - ova_vars.yaml
+  tasks:
+    - name: deploy ova
+      community.vmware.vmware_deploy_ovf:
+        hostname: "{{ vc_name }}"
+        username: "{{ vc_usr_name }}"
+        password: "{{ vc_passwd }}"
+        validate_certs: "{{ vc_vali_certs }}"
+        datacenter: "{{ dc_name }}"
+        cluster: "{{ clu_name }}"
+        ovf: "skyline.ova"
+        datastore: "{{ datastore }}"
+        disk_provisioning: thin
+        networks:
+          "VM_Network": "{{ pg_name }}"
+        name: "{{ vm_name }}"
+        allow_duplicates: false
+        fail_on_spec_warnings: "yes"
+        properties:
+          root-password: "{{ appln_pwd }}"
+          shd-admin-password: "{{ appln_pwd }}"
+          netipaddress: "{{ appln_ip }}"
+          netprefix: "{{ appln_sm }}"
+          netgateway: "{{ appln_gtw }}"
+          netdns: "{{ appln_dns }}"
+          netntp: "{{ appln_ntp }}"
+        wait_for_ip_address: true
+        power_on: true
+      delegate_to: localhost
+      register: SHD_Deployment_status
+
+    - name: deployment status
+      ansible.builtin.debug:
+        msg:
+          - "Skyline HD has been deployed"
+          - "VM Name is : {{ vm_name }}"
+          - "{{ vm_name }} is deployed on \
+             {{ SHD_Deployment_status['instance']\
+             ['hw_esxi_host'] }} ESXI host"
+          - "{{ vm_name }} is allocated \
+             {{ SHD_Deployment_status['instance']\
+             ['hw_eth0']['ipaddresses'][0] }} IP"
+          - "{{ vm_name }} is allocated \
+             {{ SHD_Deployment_status['instance']\
+             ['hw_memtotal_mb'] }} RAM "
+          - "{{ vm_name }} is allocated \
+             {{ SHD_Deployment_status['instance']\
+             ['hw_processor_count'] }} CPU"
+      when: SHD_Deployment_status is succeeded
+      delegate_to: localhost
+
+    - name: Waiting for SHD to ping ready
+      community.vmware.vmware_guest_tools_wait:
+        hostname: "{{ vc_name }}"
+        username: "{{ vc_usr_name }}"
+        password: "{{ vc_passwd }}"
+        validate_certs: "{{ vc_vali_certs }}"
+        datacenter: "{{ dc_name }}"
+        name: "{{ vm_name }}"
+      delegate_to: localhost
+

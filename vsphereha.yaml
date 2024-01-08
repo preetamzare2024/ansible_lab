@@ -1,0 +1,75 @@
+# add the advanced configuration to vSphere HA
+# You need reconfigure vsphere HA after changing advanced settings
+# As of today (26.10.2023)i do not know how to do it
+# I have disabled HA and enabled it again. But when I enable it again, Ansible see this as
+# state change and will think advanced setting needs to be implemented again.
+# This means, that everytime you run this ansible script, this will keep reconfiguring vsphere HA,
+# even if you do not change the advanced settings.
+- name: configure vSphere HA advanced settings
+  hosts: localhost
+  gather_facts: false
+  vars_files: esxi_vars.yaml
+  tasks:
+    - name: Add all advanced settings to HA Cluster
+      community.vmware.vmware_cluster_ha:
+        hostname: "{{ vc_name }}"
+        username: "{{ vc_usr_name }}"
+        password: "{{ vc_passwd }}"
+        datacenter_name: "{{ dc_name }}"
+        cluster_name: "{{ clu_name }}"
+        validate_certs: "{{ vcenter_validate_certs }}"
+        reservation_based_admission_control:
+          auto_compute_percentages: true
+          failover_level: 1
+        advanced_settings:
+          "das.isolationaddress0": "172.18.13.253"
+          "das.ignoreInsufficientHbDatastore": "true"
+          "das.ignoreRedundantNetWarning": "true"
+          "das.includeFTcomplianceChecks": "false"
+          "das.iostatsInterval": "0"
+          "das.respectVmVmAntiAffinityRules": "true"
+          "das.usedefaultisolationaddress": "false"
+      register: result
+      delegate_to: localhost
+
+    - name: disable vsphere HA
+      community.vmware.vmware_cluster_ha:
+        hostname: "{{ vc_name }}"
+        username: "{{ vc_usr_name }}"
+        password: "{{ vc_passwd }}"
+        datacenter_name: "{{ dc_name }}"
+        cluster_name: "{{ clu_name }}"
+        validate_certs: "{{ vcenter_validate_certs }}"
+        enable: false
+      async: 300
+      poll: 10
+      when: result is changed
+      register: vmware_cluster_ha
+      delegate_to: localhost
+    # unsure if this is required because vsphere ha disable tasks and enable tasks works
+    # together and create race condition
+    - name: Wait for asynchronous job to end
+      ansible.builtin.async_status:
+        jid: "{{ vmware_cluster_ha.ansible_job_id }}"
+      register: job_result
+      until: job_result.finished
+      retries: 100
+      delay: 10
+      when: vmware_cluster_ha is changed
+
+    - name: vsphere HA enable
+      community.vmware.vmware_cluster_ha:
+        hostname: "{{ vc_name }}"
+        username: "{{ vc_usr_name }}"
+        password: "{{ vc_passwd }}"
+        datacenter_name: "{{ dc_name }}"
+        cluster_name: "{{ clu_name }}"
+        validate_certs: "{{ vcenter_validate_certs }}"
+        enable: true
+        reservation_based_admission_control:
+          auto_compute_percentages: true
+          failover_level: 1
+      delegate_to: localhost
+      when: job_result is changed
+
+

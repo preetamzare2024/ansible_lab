@@ -1,0 +1,30 @@
+---
+- name: shutdown VM and then delete it
+  hosts: localhost
+  gather_facts: false
+  pre_tasks:
+    - include_vars: ova_vars.yaml
+  tasks:
+    - name: shutdown a {{ vm_name }} VM
+      community.vmware.vmware_guest:
+        hostname: "{{ vc_name }}"
+        username: "{{ vc_usr_name }}"
+        password: "{{ vc_passwd }}"
+        validate_certs: false
+        name: "{{ vm_name }}"
+        state: shutdownguest 
+      delegate_to: localhost
+      register: guest_state
+    - name: guest state
+      ansible.builtin.debug:
+        var: guest_state
+    # - name: delete the {{ vm_name }} VM
+    #   community.vmware.vmware_guest:
+    #     hostname: "{{ vc_name }}"
+    #     username: "{{ vc_usr_name }}"
+    #     password: "{{ vc_passwd }}"
+    #     validate_certs: false
+    #     name: "{{ vm_name }}"
+    #     state: absent
+    #   delegate_to: localhost
+

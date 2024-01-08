@@ -1,0 +1,31 @@
+---
+- name: create a folder on datastore to upload iso
+  hosts: localhost
+  gather_facts: false
+  pre_tasks:
+    - include_vars: vm_vars.yaml
+  tasks:
+    - name: create a directory
+      community.vmware.vsphere_file:
+        hostname: "{{ vc_name }}"
+        username: "{{ vc_usr_name }}"
+        password: "{{ vc_passwd }}"
+        validate_certs: false
+        datacenter: "{{ dc_name }}"
+        datastore: "{{ ds_name }}"
+        path: "{{ ds_fldp }}"
+        state: directory
+      register: folder_status
+      delegate_to: localhost
+    - name: upload a ISO to "{{ ds_fldp }}"
+      community.vmware.vsphere_copy:
+        hostname: "{{ vc_name }}"
+        username: "{{ vc_usr_name }}"
+        password: "{{ vc_passwd }}"
+        validate_certs: false
+        src: "ubuntu.iso"
+        datacenter: "{{ dc_name }}"
+        datastore: "{{ ds_name }}"
+        path: "ISO/ubuntu.iso"
+        timeout: 300
+      delegate_to: localhost

@@ -1,0 +1,14 @@
+# this file needs to be encrypted
+vc_name: "vc-mgmt.rainpole.dev"
+vc_usr_name: "administrator@vsphere.local"
+vc_passwd: "PSGlobalCloud123!"
+clu_name: "ber-m01-cl01"
+vcenter_validate_certs: false
+usr_name: "zare"
+usr_passwd: "VMware_LK2024!"
+fst_name: "Tetst"
+lst_name: "Zare"
+lgn_name: "zare"
+sso_group: "administrators"
+ansible_remote_tmp: "/tmp"
+

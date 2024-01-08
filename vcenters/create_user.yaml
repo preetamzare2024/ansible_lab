@@ -1,0 +1,47 @@
+# create a user in vCenter SSO
+- name: vCenter SSO user management
+  hosts: vcenters
+  gather_facts: false
+  vars_files: sso_vars.yaml
+  tasks:
+  #   - name: Changing Shell To Appliance Shell
+  #     shell: chsh -s /bin/appliancesh root
+  #   - name: Changing Shell To BASH
+  #     command: "{{ item }}"
+  #     with_items:
+  #       - shell.set --enable True
+  #       - shell
+  #       - chsh -s /bin/bash root
+
+    - name: check if the sso user is already present
+      community.vmware.vcenter_domain_user_group_info:
+        hostname: "{{ vc_name }}"
+        username: "{{ vc_usr_name }}"
+        password: "{{ vc_passwd }}"
+        validate_certs: false
+        domain: vsphere.local
+        search_string: "vsphere.local\\{{ usr_name }}"
+        exact_match: true
+      register: user_status
+      delegate_to: localhost
+      tags:
+        - always
+
+    - name: Add the domain user of the vsphere.local domain if it doesnt exist
+      command: >-
+        /usr/lib/vmware-vmafd/bin/dir-cli user create
+        --account "{{ usr_name }}"
+        --user-password "{{ usr_passwd }}"
+        --login "{{ vc_usr_name }}"
+        --password "{{ vc_passwd }}"
+        --first-name "{{ fst_name }}"
+        --last-name "{{ lst_name }}"
+      changed_when: true
+      when:
+        - user_status.domain_user_groups | length == 0
+      tags:
+        - add_user
+        - never
+    - name: print the user status
+      ansible.builtin.debug:
+        var: user_status.domain_user_groups

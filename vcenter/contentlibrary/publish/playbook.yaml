@@ -1,0 +1,43 @@
+# create a content library using rest api on datastore
+# eventually should be use to use nfs
+---
+  - name: Create and configure a content library
+    hosts: localhost
+    gather_facts: false
+    vars_files:
+      - vcenter_vars.yaml
+    tasks:
+      - name: collect facts
+        ansible.builtin.set_fact:
+          connection_args:
+            vcenter_hostname: "{{ vc_name }}"
+            vcenter_username: "{{ vc_usr_name }}"
+            vcenter_password: "{{ vc_passwd }}"
+            vcenter_validate_certs: "no"
+
+      - name: Get datastore moid
+        ansible.builtin.debug:
+          msg="{{ lookup('vmware.vmware_rest.datastore_moid', '/{{ dc_name }}/datastore/{{ datastore_name }}', **connection_args) }}"
+
+      - name: Create a local content library
+        vmware.vmware_rest.content_locallibrary:
+          vcenter_hostname: "{{ vc_name }}"
+          vcenter_username: "{{ vc_usr_name }}"
+          vcenter_password: "{{ vc_passwd }}"
+          vcenter_validate_certs: "{{ vc_vali_certs }}"
+          name: "{{ cl_name }}"
+          description: "common library for all"
+          publish_info:
+            published: true
+            authentication_method: NONE
+          storage_backings:
+            - datastore_id: "{{ lookup('vmware.vmware_rest.datastore_moid', '/{{ dc_name }}/datastore/{{ datastore_name }}', **connection_args) }}"
+              type: DATASTORE
+          state: present
+        register: publish_state
+
+      - name: Content library Info
+        debug:
+          var: publish_state
+
+

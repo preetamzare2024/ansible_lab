@@ -1,0 +1,6 @@
+# this file needs to be encrypted
+vc_name: "{{ vault_vc_name }}"
+vc_usr_name: "{{ vault_vc_usr_name }}"
+vc_passwd: "{{ vault_vc_passwd }}"
+dc_name: "{{ vault_dc_name }}"
+clu_name: "{{ vault_clu_name }}"

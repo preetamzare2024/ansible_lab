@@ -1,0 +1,13 @@
+---
+- name: Simple playbook
+  hosts: localhost
+  become: false
+  vars:
+    sddcname: "thomas-sddc"
+  tasks:
+    - name: Check if can replace the value
+      ansible.builtin.template:
+        src: templates/51_bringup_vxrail_template.j2
+        dest: /tmp/thomasthegreat.json
+        mode: "0644"
+

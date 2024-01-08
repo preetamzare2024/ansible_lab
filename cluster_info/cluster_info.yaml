@@ -1,0 +1,32 @@
+---
+- name: get vsphere HA info
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - vars_info.yaml
+    - vault_info.yaml
+  tasks:
+    - name: gather vsphere HA information for {{ clu_name }}
+      community.vmware.vmware_cluster_info:
+        hostname: "{{ vault_vc_name }}"
+        username: "{{ vault_vc_usr_name }}"
+        password: "{{ vault_vc_passwd }}"
+        cluster_name: "{{ vault_clu_name }}"
+        validate_certs: false
+      register: cluster_info
+    - name: print on the screen
+      ansible.builtin.debug:
+        msg: "{{ cluster_info.clusters['ber-m01-cl01']['datacenter']}}"
+    - name: vSphere Advanced Configuration {{ vault_clu_name }}
+      community.vmware.vmware_cluster_info:
+        hostname: "{{ vault_vc_name }}"
+        username: "{{ vault_vc_usr_name }}"
+        password: "{{ vault_vc_passwd }}"
+        cluster_name: "{{ vault_clu_name }}"
+        validate_certs: false
+        schema: vsphere
+        properties:
+          - name
+          - configuration.dasConfig.enabled
+          # - das.ignoreInsufficientHbDatastore
+

@@ -1,0 +1,30 @@
+# advanced settings on esxi hosts
+---
+- name: advanced configuration on esxi host based on security baseline
+  hosts: localhost
+  vars_files: esxi_vars.yaml
+  tasks:
+    - name: set the syslog server on all esxi servers in a {{ clu_name }}
+      community.vmware.vmware_host_config_manager:
+        hostname: "{{ vc_name }}"
+        username: "{{ vc_usr_name }}"
+        password: "{{ vc_passwd }}"
+        cluster_name: "{{ clu_name }}"
+        validate_certs: "{{ vcenter_validate_certs }}"
+        options:
+          "Syslog.global.logHost": "udp://172.18.11.200:514"
+      delegate_to: localhost
+      register: restart_svc
+    - name: restart syslogd service
+      community.vmware.vmware_host_service_manager:
+        hostname: "{{ vc_name }}"
+        username: "{{ vc_usr_name }}"
+        password: "{{ vc_passwd }}"
+        cluster_name: "{{ clu_name }}"
+        service_name: vmsyslogd
+        state: present
+        validate_certs: "{{ vcenter_validate_certs }}"
+      delegate_to: localhost
+
+
+

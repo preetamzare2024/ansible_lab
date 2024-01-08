@@ -1,0 +1,65 @@
+---
+- name: Deploy HCX Appliance
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - ova_vars.yaml
+  tasks:
+    - name: Deploy and Poweron HCX Appliance
+      community.vmware.vmware_deploy_ovf:
+        hostname: "{{ vc_name }}"
+        username: "{{ vc_usr_name }}"
+        password: "{{ vc_passwd }}"
+        validate_certs: "{{ vc_vali_certs }}"
+        datacenter: "{{ dc_name }}"
+        cluster: "{{ clu_name }}"
+        ovf: "{{ ova_name }}"
+        folder: "{{ vm_location }}"
+        datastore: "{{ datastore }}"
+        disk_provisioning: thin
+        networks:
+          "VSMgmt": "{{ pg_name }}"
+        name: "{{ vm_name }}"
+        allow_duplicates: false
+        fail_on_spec_warnings: "yes"
+        properties:
+          mgr_cli_passwd: "{{ appln_pwd }}"
+          mgr_root_passwd: "{{ appln_pwd }}"
+          hostname: "{{ vm_name }}"
+          mgr_ip_0: "{{ appln_ip }}"
+          mgr_prefix_ip_0: "{{ appln_sm }}"
+          mgr_gateway_0: "{{ appln_gtw }}"
+          mgr_dns_list: "{{ appln_dns }}"
+          mgr_domain_search_list: "{{ appln_domain_sl }}"
+          mgr_ntp_list: "{{ appln_ntp }}"
+          mgr_isSSHEnabled: true
+        wait_for_ip_address: true
+        power_on: true
+      delegate_to: localhost
+
+    - name: Wait for the HCX IP Address
+      community.vmware.vmware_guest_tools_wait:
+        hostname: "{{ vc_name }}"
+        username: "{{ vc_usr_name }}"
+        password: "{{ vc_passwd }}"
+        validate_certs: "{{ vc_vali_certs }}"
+        datacenter: "{{ dc_name }}"
+        name: "{{ vm_name }}"
+      register: vm_tools_info
+      until:
+        - vm_tools_info.instance.guest_tools_status == "guestToolsRunning"
+      retries: 60
+      delay: 5
+      delegate_to: localhost
+    # - name: Get details
+      # ansible.builtin.debug:
+        # var: vm_tools_info
+    - name: Check the deployment status of HCX
+      ansible.builtin.debug:
+        msg:
+        - "HCX appliance is deployed successfully and powered on"
+        - "{{ vm_name }} is deployed on {{ vm_tools_info['instance']['hw_esxi_host'] }} ESXi host"
+        - "VMware Tools Status is {{ vm_tools_info['instance']['guest_tools_status'] }}"
+        - "RAM Assigned is {{ vm_tools_info['instance']['hw_memtotal_mb'] }}"
+        - "CPU Cores Assigned is {{ vm_tools_info['instance']['hw_processor_count'] }}"
+        - "IP4 assigned is {{ vm_tools_info['instance']['ipv4'] }}"

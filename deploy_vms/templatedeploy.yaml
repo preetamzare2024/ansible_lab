@@ -1,0 +1,37 @@
+---
+- name: deploy vm from template
+  gather_facts: false
+  hosts: localhost
+  pre_tasks:
+    - include_vars: vm_vars.yaml
+  tasks:
+    - name: deploy from a template
+      community.vmware.vmware_guest:
+        hostname: "{{ vc_name }}"
+        username: "{{ vc_usr_name }}"
+        password: "{{ vc_passwd }}"
+        validate_certs: false
+        folder: "{{ vm_fld_name }}"
+        name: "{{ vm_name }}"
+        template: "{{ tmpl_name }}"
+        state: poweredon
+        datacenter: "{{ dc_name }}"
+        cluster: "{{ clu_name }}"
+        networks:
+          - name: "{{ vm_network }}"
+            device_type: vmxnet3
+            ip: "{{ vm_ip }}"
+            netmask: "{{ vm_sm }}"
+            gateway: "{{ vm_gtw }}"
+        wait_for_ip_address: true
+        wait_for_ip_address_timeout: 600
+        customization:
+          hostname: "{{ vm_name }}"
+          domain: "{{ cus_domainname }}"
+          dns_servers:
+            - "{{ cust_dns_srv01 }}"
+          dns_suffix:
+            - "{{ cust_dns_sffx }}"
+        wait_for_customization: true
+        wait_for_customization_timeout: 1200
+      delegate_to: localhost

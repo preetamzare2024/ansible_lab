@@ -1,0 +1,34 @@
+# start NTP service on esxi hosts
+---
+- name: start NTP Service on ESXi hosts
+  hosts: localhost
+  vars_files: esxi_vars.yaml
+  tasks:
+    - name: Start NTP Service on all ESXi hosts
+      community.vmware.vmware_host_service_manager:
+        hostname: "{{ vc_name }}"
+        username: "{{ vc_usr_name }}"
+        password: "{{ vc_passwd }}"
+        cluster_name: "{{ clu_name }}"
+        service_name: ntpd
+        state: present
+        validate_certs: "{{ vcenter_validate_certs }}"
+      delegate_to: localhost
+    - name: ensure shell and ssh services are stopped
+      community.vmware.vmware_host_service_manager:
+        hostname: "{{ vc_name }}"
+        username: "{{ vc_usr_name }}"
+        password: "{{ vc_passwd }}"
+        cluster_name: "{{ clu_name }}"
+        service_name: "{{ item }}"
+        state: stop
+        validate_certs: "{{ vcenter_validate_certs }}"
+      with_items:
+        - "TSM"
+        - "DCUI"
+      register: host_svc_state
+      delegate_to: localhost
+    - name: print the host_svc_state state
+      ansible.builtin.debug:
+        var: host_svc_state
+

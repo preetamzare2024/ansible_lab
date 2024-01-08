@@ -1,0 +1,61 @@
+---
+- name: deploy plain vm without OS
+  gather_facts: false
+  hosts: localhost
+  pre_tasks:
+    - include_vars: vm_vars.yaml
+    - include_vars: fld_name.yaml
+  tasks:
+    - name: create a folders
+      community.vmware.vcenter_folder:
+        hostname: "{{ vc_name }}"
+        username: "{{ vc_usr_name }}"
+        password: "{{ vc_passwd }}"
+        validate_certs: false
+        folder_name: "{{ item }}"
+        datacenter_name: "{{ dc_name }}"
+        folder_type: vm
+        state: present
+      with_items: "{{ fld_names }}"
+      register: folder_status
+      delegate_to: localhost
+
+    - name: display result
+      debug:
+        var: folder_status
+
+    - name: create a VM
+      community.vmware.vmware_guest:
+        hostname: "{{ vc_name }}"
+        username: "{{ vc_usr_name }}"
+        password: "{{ vc_passwd }}"
+        validate_certs: false
+        folder: "ubuntu_templates"
+        name: ubuntu_golden
+        state: poweredon
+        guest_id: ubuntu64Guest
+        datacenter: "{{ dc_name }}"
+        cluster: "{{ clu_name }}"
+        cdrom:
+          - controller_number: 0
+            unit_number: 0
+            type: iso
+            iso_path: "[ber-m01-cl01-ds-vsan01] /ISO/ubuntu.iso"
+        disk:
+          - size_gb: 40
+            type: thin
+            datastore: ber-m01-cl01-ds-vsan01
+        hardware:
+          memory_mb: 8192
+          num_cpus: 2
+          scsi: paravirtual
+        networks:
+          - name:  "{{ vm_network }}"
+            device_type: vmxnet3
+            ip: 172.18.11.207
+            netmask: 255.255.255.0
+        wait_for_ip_address: true
+        wait_for_ip_address_timeout: 600
+      delegate_to: localhost
+      register: deploy_vm_status
+

@@ -1,0 +1,61 @@
+---
+- name: Configure files for cloud init
+  hosts: labservers
+  gather_facts: true
+  become: true
+  pre_tasks:
+    - name: update and upgrade OS
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+        upgrade: dist
+
+  tasks:
+    - name: create a user with  sudo privileges
+      user:
+        name: ttytsdeur
+        comment: 28000 Euro
+        shell: /bin/bash
+        group: adm
+        password: $6$bjy4QhW8.nMDtLEy$D8z.GuDlY4IP.DzG5C8UvUNnqQ4kOPND3inbZqutddd2ZdwEkftPoKAM9h/injOUK.wFX9TiJTjg8Ep7UXta20
+    - name: add ssh pub key for the user
+      authorized_key:
+        user: ttytsdeur
+        key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF+UdIu0Qq+o6+5AMmvV0/CQHJt9I0nvriyjiksRswjn 01-11-2023"
+    - name: add user to sudoers file
+      lineinfile:
+        path: /etc/sudoers
+        regex: "^ttytsdeur"
+        line: "ttytsdeur ALL=(ALL) NOPASSWD:ALL"
+        group: root
+        owner: root
+        mode: 0400
+    # - name: only keep vmware as datasource
+    #   lineinfile:
+    #     path: "/etc/cloud/cloud.cfg.d/90_dpkg.cfg"
+    #     regex: "^datasource_list"
+    #     line: "datasource_list: [ VMware ]"
+    - name: Add service after dbus service
+      lineinfile:
+        path: /lib/systemd/system/open-vm-tools.service
+        regex: "^After=dbus.service"
+        insertafter: "[Unit]"
+        firstmatch: yes
+        line: "After=dbus.service"
+
+    - name: Disable vmware customization
+      lineinfile:
+        path: /etc/cloud/cloud.cfg
+        regex: "^disable_vmware_customization: true"
+        insertbefore: "users:"
+        firstmatch: yes
+        line: "disable_vmware_customization: true"
+
+    # - name: run cloudinit and shutdown
+    #   shell: |
+    #     cloud-init clean
+    #     shutdown now
+#  cat open-vm-tools.service | sed '/\[Unit\]/a After=dbus.service'
+# no need to escape because regex takes care of it
+# References: https://spacelift.io/blog/ansible-shell-module
+

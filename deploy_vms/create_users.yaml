@@ -1,0 +1,33 @@
+# create a user on hatchery to create dns entries
+---
+- name: Create a user and add it to sudoers group
+  hosts: dnsservers
+  become: true
+  gather_facts: true
+  vars:
+    user_name: "krisha"
+    display_name: "Krisha Zare"
+
+  tasks:
+    - name: Create a user
+      ansible.builtin.user:
+        name: "{{ user_name }}"
+        comment: "{{ display_name }}"
+        shell: /bin/bash
+        group: adm
+        password: $6$dMqPabnhiQVRg88x$GnpTlYJfc1isIxnUB.GSGyDhYtD5t8YYJq1x8HyZL5oHQzb9LYZmBkVD4XcRyG2OrEw9B4CpxbU7jics4l14Y/
+
+    - name: copy ssh key to the server
+      authorized_key:
+        user: "{{ user_name }}"
+        key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEKESeQX6R4XLBbf3oWz9elFwqQ3F2urxPkYSeZwvQ+w Server Access Key"
+
+    - name: add user to sudoers file
+      ansible.builtin.lineinfile:
+        path: /etc/sudoers
+        regex: "^{{ user_name }}"
+        line: "{{ user_name }} ALL=(ALL) NOPASSWD:ALL"
+        group: root
+        owner: root
+        mode: 0600
+

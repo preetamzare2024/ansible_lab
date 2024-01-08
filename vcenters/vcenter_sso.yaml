@@ -1,0 +1,21 @@
+# create a user in vCenter SSO
+- name: vCenter SSO user management
+  hosts: vcenters
+  gather_facts: false
+  vars_files: vcenters_vars.yaml
+  tasks:
+    - name: check if the sso user is already present
+      community.vmware.vcenter_domain_user_group_info:
+        hostname: "{{ vc_name }}"
+        username: "{{ vc_usr_name }}"
+        password: "{{ vc_passwd }}"
+        validate_certs: false
+        domain: vsphere.local
+        search_string: "vsphere.local\\{{ usr_name }}"
+        exact_match: true
+      register: user_status
+      delegate_to: localhost
+    - name: print the user status
+      ansible.builtin.debug:
+        var: user_status
+        # msg: "The user {{ user_status['domain_user_groups'][0]['principal'] }} is present"

@@ -1,0 +1,29 @@
+# Goal - to validate nsx edge cluster deployment without T0/T1
+- name: Get Clusters
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - nsxedgecluster_vars.yaml
+  tasks:
+    - name: Get VCF Token
+      ansible.builtin.uri:
+        url: "{{ get_clusters }}"
+        method: GET
+        validate_certs: false
+        return_content: true
+        body_format: json
+        headers:
+          Authorization: 'Bearer {{ bearer_token }}'
+          Content-Type: application/json
+        status_code:
+          - 200
+          - 202
+      register: get_domains_response
+      ignore_errors: true
+    - name: Check if the token is expired
+      ansible.builtin.fail:
+        msg: "Token has expired"
+      when: '"JWT expired at" in get_domains_response.content'
+    - name: Print the cluster info
+      ansible.builtin.debug:
+        var: get_domains_response

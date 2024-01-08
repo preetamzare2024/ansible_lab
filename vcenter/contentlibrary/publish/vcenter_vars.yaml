@@ -1,0 +1,9 @@
+---
+# minimum required information
+vc_name: "vc-mgmt.rainpole.dev"
+vc_usr_name: "administrator@vsphere.local"
+vc_passwd: "PSGlobalCloud123!"
+vc_vali_certs: false
+cl_name: "common"
+dc_name: "ber-m01-dc01"
+datastore_name: "ber-m01-cl01-ds-vsan01"
